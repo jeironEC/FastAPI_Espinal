@@ -7,13 +7,13 @@
 
 ## Capturas de cada endpoint de la API
 
-### Get users
-<img src="/img/getusers.png" alt="Endpoint get users">
+### Post user
+<img src="/img/postuser.png" alt="Endpoint post user">
 
 ---
 
-### Post user
-<img src="/img/postuser.png" alt="Endpoint post user">
+### Get users
+<img src="/img/getusers.png" alt="Endpoint get users">
 
 ---
 
