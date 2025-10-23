@@ -1,90 +1,50 @@
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Depends
+from sqlmodel import SQLModel, create_engine, Session, SQLModel, select
+from dotenv import load_dotenv
+from models.Product import Product, ProductRequest, ProductResponse
 
-app = FastAPI()
+app = FastAPI() # Iniciar la API
 
-llista_usuaris = ["Jeiron", "Junior"]
+load_dotenv() # Cargar las variables de entorno
 
-def diccionari_usuaris():
-    ids = range(len(llista_usuaris))
-    dicc_usuaris = dict(zip(ids, llista_usuaris))
-    return dicc_usuaris
+DATABASE_URL = os.getenv("DATABASE_URL") # Obtener la url de la base de datos
 
-"""
-    Cear:            Afegir nou usuari
-    Endpoint:        /api/users
-    Mètode:          POST
-    Funcionalitat:   Crear un nou usuari i afegir-lo a la list de nom users.
-    Return:          Retorna informació de la llista mostrant tots els registres en format diccionari.
-"""
-@app.post("/api/users/{nombre}", response_model=dict)
-def crear_usuari(nombre):
-    llista_usuaris.append(nombre)
+engine = create_engine(DATABASE_URL) # Motor de la base de datos
 
-    dicc_usuaris = diccionari_usuaris()
+SQLModel.metadata.create_all(engine)
 
-    return dicc_usuaris
+def get_db():
+    db = Session(engine)
 
-"""
-    Llegir:          Consultar un usuari
-    Endpoint:        /api/users/{id}
-    Mètode:          GET
-    Funcionalitat:   Haurà de buscar l’usuari de la list amb l’id.
-    Return:          Retorna totes les dades de l’usuari buscat en format diccionari.
-"""
-@app.get('/api/users/{id}', response_model=dict)
-def obtener_usuari_id(id):
-    id_enter = int(id)
+    try:
+        yield db
+    finally:
+        db.close() 
 
-    dicc_usuaris = diccionari_usuaris()
+@app.post('api/product', response_model=dict, tags=["Create"])
+def add_product(product: ProductRequest, db: Session = Depends(get_db)):
+    insert = Product.model_validate(product)
+    db.add(insert)
+    db.commit()
 
-    if id_enter in dicc_usuaris.keys():
-        return {id_enter: dicc_usuaris[id_enter]}
-    return {"msg": "L'identificador de l'usuari no existeix"}
+    return {"msg": "Producte afegit"}
 
-"""
-    Llegir:          Consultar tots els usuaris
-    Endpoint:        /api/users
-    Mètode:          GET
-    Funcionalitat:   Haurà de buscar tots els usuaris de la list.
-    Return:          Retorna totes les dades de tots els usuaris en format diccionari.
-"""
-@app.get('/api/users', response_model=dict)
-def mostra_usuaris():
-    dicc_usuaris = diccionari_usuaris()
+@app.get('api/product/{id}', response_model=ProductResponse, tags=["Read one by ID"])
+def get_product_by_id(id: int, db: Session = Depends(get_db)):
+    statement = select(Product).where(Product.id == id)
+    result = db.exec(statement).first()
 
-    return dicc_usuaris
+    return ProductResponse.model_validate(result)
 
-"""
-    Actualitzar:     Actualització completa
-    Endpoint:        /api/users/{id}
-    Mètode:          PUT
-    Funcionalitat:   Actualitzar totes les dades d’un usuari de la list.
-    Return:          Retorna totes les dades de l’usuari actualitzat en format diccionari. 
-"""
-@app.put('/api/users/{id}', response_model=dict)
-def actualitzar_usuari(id, nombre):
-    id_enter = int(id)
-    dicc_usuaris = diccionari_usuaris()
+@app.get('api/products', response_model=list[ProductResponse], tags=["Read products"])
+def get_products(db: Session = Depends(get_db)):
+    statement = select(Product)
+    results = db.exec(statement).all()
+    return results
 
-    if id_enter in dicc_usuaris.keys():
-        dicc_usuaris[id_enter] = nombre
-        return dicc_usuaris
-    return {"msg": "L'identificador de l'usuari no existeix"}
-
-"""
-    Eliminar:        Esborrar usuari
-    Endpoint:        /api/usuaris/{id}
-    Mètode:          DELETE
-    Funcionalitat:   Eliminar un producte de la list.
-    Return:          Retorna les tota la list d’usuaris en format diccionari.
-"""
-@app.delete('/api/users/{id}', response_model=dict)
-def eliminar_usuari(id):
-    id_enter = int(id)
-
-    dicc_usuaris = diccionari_usuaris()
-
-    if id_enter in dicc_usuaris.keys():
-        dicc_usuaris.pop(id_enter)
-        return dicc_usuaris
-    return {"msg": "L'identificador de l'usuari no existeix"}
+@app.get('api/product/{type}', response_model=list[ProductResponse], tags=["Read all with type"])
+def get_product_with_type(type: str, db: Session = Depends(get_db)):
+    statement = select(Product).where(Product.type == type)
+    results = db.exec(statement).all()
+    return results 
