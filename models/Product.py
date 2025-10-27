@@ -25,3 +25,8 @@ class ProductResponse(SQLModel):
     stock: int
     price: float
     type: str
+
+class ProductPartial(SQLModel):
+    name: str
+    description: str
+    price: float
