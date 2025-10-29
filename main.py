@@ -49,8 +49,8 @@ def get_product_with_type(type: str, db: Session = Depends(get_db)):
     results = db.exec(statement).all()
     return results 
 
-@app.delete('/api/product/{id}', response_model=ProductResponse, tags=["Delete product by ID"])
-def eliminar_product(id: int, db: Session = Depends(get_db)):
+@app.delete('/api/product/delete/{id}', response_model=ProductResponse, tags=["Delete product by ID"])
+def delete_product(id: int, db: Session = Depends(get_db)):
     statement = select(Product).where(Product.id == id)
     result = db.exec(statement).one()
     db.delete(result)
@@ -63,37 +63,40 @@ def read_product_partial_by_id(id: int, db: Session = Depends(get_db)):
     result = db.exec(statement).first()
     return ProductPartial.model_validate(result)
 
-@app.put('/api/product/{id}}', response_model=ProductRequest, tags=["Update product"])
-def update_product_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
-    statement = select(Product).where(Product.id == id)
-    result = db.exec(statement)
-    product_modify = result.one()
+# Cambiar implementacion
+# @app.put('/api/product/{id}', response_model=ProductRequest, tags=["Update product"])
+# def update_product_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
+#     statement = select(Product).where(Product.id == id)
+#     result = db.exec(statement)
+#     product_modify = result.one()
 
-    product_modify.name = product.name
-    product_modify.description = product.description
-    product_modify.weight = product.weight
-    product_modify.stock = product.stock
-    product_modify.price = product.price
-    product_modify.type = product.type
+#     product_modify.id = product_modify.id
+#     product_modify.name = product.name
+#     product_modify.description = product.description
+#     product_modify.weight = product.weight
+#     product_modify.stock = product.stock
+#     product_modify.price = product.price
+#     product_modify.type = product.type
 
-    db.add(product_modify)
-    db.commit()
-    db.refresh(product_modify)
+#     db.add(product_modify)
+#     db.commit()
+#     db.refresh(product_modify)
 
-    return ProductRequest.model_validate(product_modify)
+#     return ProductRequest.model_validate(product_modify)
 
-@app.patch('/api/product/{id}', response_model=ProductRequest, tags=["Update partial by id"])
-def update_product_partial_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
-    statement = select(Product).where(Product.id == id)
-    result = db.exec(statement)
+# Cambiar implementacion
+# @app.patch('/api/product/{id}', response_model=ProductRequest, tags=["Update partial by id"])
+# def update_product_partial_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
+#     statement = select(Product).where(Product.id == id)
+#     result = db.exec(statement)
 
-    product_modify = result.one()
+#     product_modify = result.one()
 
-    product_modify.name = product.name
-    product_modify.price = product.price
+#     product_modify.name = product.name
+#     product_modify.price = product.price
 
-    db.add(product_modify)
-    db.commit()
-    db.refresh(product_modify)
+#     db.add(product_modify)
+#     db.commit()
+#     db.refresh(product_modify)
 
-    return ProductRequest.model_validate(product_modify)
+#     return ProductRequest.model_validate(product_modify)
