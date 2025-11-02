@@ -7,25 +7,45 @@
 
 ## Capturas de cada endpoint de la API
 
-### Post user
-<img src="/img/postuser.png" alt="Endpoint post user">
+### Post product
+<img src="/img/post_product.png" alt="Endpoint post product">
 
 ---
 
-### Get users
-<img src="/img/getusers.png" alt="Endpoint get users">
+### Get products
+<img src="/img/read_products.png" alt="Endpoint get products">
 
 ---
 
-### Get user by ID
-<img src="/img/getuserid.png" alt="Endpoint get user by ID">
+### Get product by ID
+<img src="/img/read_product_by_id.png" alt="Endpoint get product by ID">
 
 ---
 
-### Update user
-<img src="/img/updateuser.png" alt="Endpoint update user">
+### Get product partial by ID
+<img src="/img/read_product_partial_by_id.png" alt="Endpoint get product partial by ID">
 
 ---
 
-### Delete user
-<img src="/img/deleteuser.png" alt="Endpoint delete user">
+### Get product by type
+<img src="/img/read_product_by_type.png" alt="Endpoint get product by type">
+
+---
+
+### Update product
+<img src="/img/update_product.png" alt="Endpoint update product">
+
+---
+
+### Update product partial one camp
+<img src="/img/update_product_partial_one_camp.png" alt="Endpoint update product partial one camp">
+
+---
+
+### Update product partial two camps
+<img src="/img/update_product_partial_two_camps.png" alt="Endpoint update product partial two camps">
+
+---
+
+### Delete product
+<img src="/img/delete_product.png" alt="Endpoint delete product">

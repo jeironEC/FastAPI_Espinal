@@ -30,3 +30,10 @@ class ProductPartial(SQLModel):
     name: str
     description: str
     price: float
+
+class ProductUpdateCamp(SQLModel):
+    name: str
+
+class ProductUpdateTwoCamp(SQLModel):
+    name: str
+    price: float

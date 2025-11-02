@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, Depends
 from sqlmodel import SQLModel, create_engine, Session, SQLModel, select
 from dotenv import load_dotenv
-from models.Product import Product, ProductRequest, ProductResponse, ProductPartial
+from models.Product import Product, ProductRequest, ProductResponse, ProductPartial, ProductUpdateCamp, ProductUpdateTwoCamp
 
 app = FastAPI() # Iniciar la API
 
@@ -65,51 +65,48 @@ def read_product_partial_by_id(id: int, db: Session = Depends(get_db)):
 
 @app.put('/api/product/{id}', response_model=dict, tags=["Update product"])
 def update_product_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
-    statement = select(Product).where(Product.id == id)
-    result = db.exec(statement)
-    product_modify = result.one()
+    product_select = db.get(Product, id)
 
-    product_modify.id = product_modify.id
-    product_modify.name = product.name
-    product_modify.description = product.description
-    product_modify.weight = product.weight
-    product_modify.stock = product.stock
-    product_modify.price = product.price
-    product_modify.type = product.type
+    if not product_select:
+        return {"msg": "El producte no existeix"}
+    
+    product_data = product.model_dump(exclude_unset=True)
+    product_select.sqlmodel_update(product_data)
 
-    db.add(product_modify)
+    db.add(product_select)
     db.commit()
-    db.refresh(product_modify)
+    db.refresh(product_select)
 
     return {"msg": "Producte actualizat correctament"}
 
-# Sujeta a cambiar antes de envio final
-@app.patch('/api/product/{id}', response_model=ProductRequest, tags=["Update partial by id"])
-def update_product_partial_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
-    statement = select(Product).where(Product.id == id)
-    result = db.exec(statement)
-    product_modify = result.one()
+@app.patch('/api/product/{id}', response_model=dict, tags=["Update partial one camp by id"])
+def update_product_partial_by_id(id: int, product: ProductUpdateCamp, db: Session = Depends(get_db)):
+    product_select = db.get(Product, id)
 
-    product_modify.price = product.price
+    if not product_select:
+        return {"msg": "El producte no existeix"}
+    
+    product_data = product.model_dump(exclude_unset=True)
+    product_select.sqlmodel_update(product_data)
 
-    db.add(product_modify)
+    db.add(product_select)
     db.commit()
-    db.refresh(product_modify)
+    db.refresh(product_select)
 
-    return ProductRequest.model_validate(product_modify)
+    return {"msg": "Camp nom de producte actualizat correctament"}
 
-# Sujeta a cambiar antes de envio final
-@app.patch('/api/product_dos_camps/{id}', response_model=ProductRequest, tags=["Update partial by id"])
-def update_product_partial_by_id(id: int, product: ProductRequest, db: Session = Depends(get_db)):
-    statement = select(Product).where(Product.id == id)
-    result = db.exec(statement)
-    product_modify = result.one()
+@app.patch('/api/product_dos_camps/{id}', response_model=dict, tags=["Update partial two camps by id"])
+def update_product_partial_by_id(id: int, product: ProductUpdateTwoCamp, db: Session = Depends(get_db)):
+    product_select = db.get(Product, id)
 
-    product_modify.description = product.description
-    product_modify.price = product.price
+    if not product_select:
+        return {"msg": "El producte no existeix"}
+    
+    product_data = product.model_dump(exclude_unset=True)
+    product_select.sqlmodel_update(product_data)
 
-    db.add(product_modify)
+    db.add(product_select)
     db.commit()
-    db.refresh(product_modify)
+    db.refresh(product_select)
 
-    return ProductRequest.model_validate(product_modify)
+    return {"msg": "Camp nom i preu de producte actualizat correctament"}
